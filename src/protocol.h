@@ -16,13 +16,6 @@
 #include <string>
 #include "uint256.h"
 
-extern bool fTestNet;
-static inline unsigned short GetDefaultPort(const bool testnet = fTestNet)
-{
-    return testnet ? 18333 : 8333;
-}
-
-
 /** Message header.
  * (4) message start.
  * (12) command.
