@@ -6,6 +6,7 @@
 #ifndef BITCOIN_CHAIN_PARAMS_H
 #define BITCOIN_CHAIN_PARAMS_H
 
+#include "bignum.h"
 #include "uint256.h"
 #include "util.h"
 
@@ -32,8 +33,9 @@ public:
 
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
-    const vector<unsigned char> &AlertKey() const { return vAlertPubKey; }
+    const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
+    const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
 protected:
     CChainParams() {};
 
@@ -42,6 +44,7 @@ protected:
     // Raw pub key bytes for the broadcast alert signing key.
     vector<unsigned char> vAlertPubKey;
     int nDefaultPort;
+    CBigNum bnProofOfWorkLimit;
 };
 
 /**
