@@ -36,6 +36,7 @@ public:
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+    int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
 protected:
     CChainParams() {};
 
@@ -45,6 +46,7 @@ protected:
     vector<unsigned char> vAlertPubKey;
     int nDefaultPort;
     CBigNum bnProofOfWorkLimit;
+    int nSubsidyHalvingInterval;
 };
 
 /**
