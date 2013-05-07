@@ -32,6 +32,8 @@ public:
 
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
+    const vector<unsigned char> &AlertKey() const { return vAlertPubKey; }
+
 protected:
     CChainParams() {};
 
