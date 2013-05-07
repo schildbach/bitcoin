@@ -11,6 +11,7 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "checkqueue.h"
+#include "chainparams.h"
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -32,7 +33,6 @@ unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
 std::vector<CBlockIndex*> vBlockIndexByHeight;
-uint256 hashGenesisBlock("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -184,7 +184,7 @@ void CBlockLocator::Set(const CBlockIndex* pindex)
         if (vHave.size() > 10)
             nStep *= 2;
     }
-    vHave.push_back(hashGenesisBlock);
+    vHave.push_back(Params().HashGenesisBlock());
 }
 
 int CBlockLocator::GetDistanceBack()
@@ -237,7 +237,7 @@ uint256 CBlockLocator::GetBlockHash()
                 return hash;
         }
     }
-    return hashGenesisBlock;
+    return Params().HashGenesisBlock();
 }
 
 int CBlockLocator::GetHeight()
@@ -1675,7 +1675,7 @@ bool CBlock::ConnectBlock(CValidationState &state, CBlockIndex* pindex, CCoinsVi
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
-    if (GetHash() == hashGenesisBlock) {
+    if (GetHash() == Params().HashGenesisBlock()) {
         view.SetBestBlock(pindex);
         pindexGenesisBlock = pindex;
         return true;
@@ -2203,7 +2203,7 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
     int nHeight = 0;
-    if (hash != hashGenesisBlock) {
+    if (hash != Params().HashGenesisBlock()) {
         map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashPrevBlock);
         if (mi == mapBlockIndex.end())
             return state.DoS(10, error("AcceptBlock() : prev block not found"));
@@ -2760,21 +2760,9 @@ void UnloadBlockIndex()
 
 bool LoadBlockIndex()
 {
-    if (fTestNet)
-    {
-        pchMessageStart[0] = 0x0b;
-        pchMessageStart[1] = 0x11;
-        pchMessageStart[2] = 0x09;
-        pchMessageStart[3] = 0x07;
-        hashGenesisBlock = uint256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943");
-    }
-
-    //
     // Load block index from databases
-    //
     if (!fReindex && !LoadBlockIndexDB())
         return false;
-
     return true;
 }
 
@@ -2824,11 +2812,11 @@ bool InitBlockIndex() {
         //// debug print
         uint256 hash = block.GetHash();
         printf("%s\n", hash.ToString().c_str());
-        printf("%s\n", hashGenesisBlock.ToString().c_str());
+        printf("%s\n", Params().HashGenesisBlock().ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
         assert(block.hashMerkleRoot == uint256("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
         block.print();
-        assert(hash == hashGenesisBlock);
+        assert(hash == Params().HashGenesisBlock());
 
         // Start new block file
         try {
@@ -2948,10 +2936,10 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
             try {
                 // locate a header
                 unsigned char buf[4];
-                blkdat.FindByte(pchMessageStart[0]);
+                blkdat.FindByte(Params().MessageStart()[0]);
                 nRewind = blkdat.GetPos()+1;
                 blkdat >> FLATDATA(buf);
-                if (memcmp(buf, pchMessageStart, 4))
+                if (memcmp(buf, Params().MessageStart(), 4))
                     continue;
                 // read size
                 blkdat >> nSize;
@@ -3094,12 +3082,6 @@ bool static AlreadyHave(const CInv& inv)
 }
 
 
-
-
-// The message start string is designed to be unlikely to occur in normal data.
-// The characters are rarely used upper ASCII, not valid as UTF-8, and produce
-// a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xf9, 0xbe, 0xb4, 0xd9 };
 
 
 void static ProcessGetData(CNode* pfrom)
@@ -3824,7 +3806,7 @@ bool ProcessMessages(CNode* pfrom)
         it++;
 
         // Scan for message start
-        if (memcmp(msg.hdr.pchMessageStart, pchMessageStart, sizeof(pchMessageStart)) != 0) {
+        if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
             printf("\n\nPROCESSMESSAGE: INVALID MESSAGESTART\n\n");
             fOk = false;
             break;

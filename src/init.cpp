@@ -11,6 +11,7 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "checkpoints.h"
+#include "chainparams.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -497,6 +498,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     fTestNet = GetBoolArg("-testnet", false);
     Checkpoints::fEnabled = GetBoolArg("-checkpoints", true);
+
+    if (fTestNet) {
+        SelectParams(CChainParams::TESTNET);
+    }
 
     if (mapArgs.count("-bind")) {
         // when specifying an explicit binding address, you want to listen on it
