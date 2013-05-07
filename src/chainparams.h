@@ -15,8 +15,9 @@
 using namespace std;
 
 #define MESSAGE_START_SIZE 4
-
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
+
+class CBlock;
 
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
@@ -37,6 +38,7 @@ public:
     int GetDefaultPort() const { return nDefaultPort; }
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
+    virtual const CBlock &GenesisBlock() const = 0;
 protected:
     CChainParams() {};
 
