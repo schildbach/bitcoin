@@ -3,6 +3,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "chainparams.h"
 #include "txdb.h"
 #include "walletdb.h"
 #include "bitcoinrpc.h"
@@ -496,11 +497,20 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
 
-    fTestNet = GetBoolArg("-testnet", false);
     Checkpoints::fEnabled = GetBoolArg("-checkpoints", true);
+    bool fRegTest = GetBoolArg("-regtest");
+    // TODO: Eliminate usage of this global variable in favor of all network/chain-specific differences
+    // being abstracted by CChainParams.
+    fTestNet = GetBoolArg("-testnet");
 
-    if (fTestNet) {
+    if (fRegTest) {
+        SelectParams(CChainParams::REGTEST);
+        // Regtest mode is intended for standalone operation or private networks. There are no DNS seeds.
+        SoftSetBoolArg("-dnsseed", false);
+    } else if (fTestNet) {
         SelectParams(CChainParams::TESTNET);
+    } else {
+        SelectParams(CChainParams::MAIN);
     }
 
     if (mapArgs.count("-bind")) {
