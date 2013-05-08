@@ -44,6 +44,7 @@ public:
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
+    virtual Network NetworkID() const = 0;
 protected:
     CChainParams() {};
 

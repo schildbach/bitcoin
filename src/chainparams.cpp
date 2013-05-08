@@ -55,7 +55,7 @@ public:
     }
 
     virtual const CBlock& GenesisBlock() const { return genesis; }
-
+    virtual Network NetworkID() const { return CChainParams::MAIN; }
 protected:
     CBlock genesis;
 };
@@ -85,6 +85,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
     }
+    virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
 static CTestNetParams testNetParams;
 
@@ -111,6 +112,7 @@ public:
     }
 
     virtual bool RequireRPCPassword() const { return false; }
+    virtual Network NetworkID() const { return CChainParams::REGTEST; }
 };
 static CRegTestParams regTestParams;
 
