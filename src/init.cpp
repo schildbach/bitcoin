@@ -506,6 +506,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fRegTest) {
         SelectParams(CChainParams::REGTEST);
         // Regtest mode is intended for standalone operation or private networks. There are no DNS seeds.
+        SoftSetArg("-connect", "0.0.0.0");
+        SoftSetBoolArg("-listen", true);
         SoftSetBoolArg("-dnsseed", false);
     } else if (fTestNet) {
         SelectParams(CChainParams::TESTNET);
