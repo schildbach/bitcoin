@@ -41,8 +41,9 @@ public:
     int GetDefaultPort() const { return nDefaultPort; }
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
-    virtual const CBlock &GenesisBlock() const = 0;
+    virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
+    const string& DataDir() const { return strDataDir; }
 protected:
     CChainParams() {};
 
@@ -53,6 +54,7 @@ protected:
     int nDefaultPort;
     CBigNum bnProofOfWorkLimit;
     int nSubsidyHalvingInterval;
+    string strDataDir;
 };
 
 /**
